@@ -3,15 +3,13 @@ using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 public class PlayerMovement : MonoBehaviour
 {
-    //Declaro la variable de tipo RigidBody que luego asociaremos a nuestro Jugador
     Rigidbody rb;
 
-    //Declaro la variable p�blica velocidad para poder modificarla desde la Inspector window
     float currentSpeed = 5;
 
-    public float walkSpeed;
-    public float runSpeed;
-    public float rotationSpeed;
+    public float walkSpeed = 3f;
+    public float runSpeed = 6f;
+    public float rotationSpeed = 10f;
 
     Animator animator;
 
@@ -19,7 +17,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
 
-        //Capturo el rigidbody del jugador al iniciar el juego
+        
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         animator = GetComponent<Animator>();
@@ -29,7 +27,6 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
 
-        //Capturo el movimiento en horizontal y vertical de nuestro teclado
         float horizontalMovement = Input.GetAxis("Horizontal");
         float verticalMovement = Input.GetAxis("Vertical");
 
