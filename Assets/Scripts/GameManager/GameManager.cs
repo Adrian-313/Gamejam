@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -12,7 +13,7 @@ public class GameManager : MonoBehaviour
 
     public ManagementData managementData; // Referencia a los datos de configuración
     public Animator OpenCloseScene; // Controla las animaciones de transición
-    public Text timerText; // Referencia al texto del reloj
+    public TextMeshPro timerText; // Referencia al texto del reloj
     public float gameDuration = 60f; // Duración del juego en segundos
 
     private float timer; // Temporizador interno
@@ -46,7 +47,7 @@ public class GameManager : MonoBehaviour
         // Inicializa el texto del reloj
         if (timerText != null)
         {
-            timerText.text = FormatTime(timer);
+            timerText.SetText(FormatTime(timer));
         }
     }
 
@@ -54,18 +55,12 @@ public class GameManager : MonoBehaviour
     {
         if (!gameEnded)
         {
-            timer -= Time.deltaTime; // Reduce el tiempo restante
+            timer += Time.deltaTime; // Reduce el tiempo restante
 
             // Actualiza el texto del reloj
             if (timerText != null)
             {
-                timerText.text = FormatTime(timer);
-            }
-
-            // Verifica si el jugador ha ganado
-            if (timer <= 0)
-            {
-                PlayerWins();
+                timerText.SetText(FormatTime(timer));
             }
         }
     }
@@ -74,7 +69,7 @@ public class GameManager : MonoBehaviour
     {
         if (!gameEnded)
         {
-            PlayerLoses();
+            StartCoroutine(PlayerLoses());
         }
     }
 
@@ -86,13 +81,14 @@ public class GameManager : MonoBehaviour
         StartCoroutine(ChangeScene(TypeScene.HomeScene)); // Cambia a la escena principal
     }
 
-    private void PlayerLoses()
+    private IEnumerator PlayerLoses()
     {
         gameEnded = true; // Marca el juego como terminado
         OnEnd?.Invoke();
+        yield return new WaitForSecondsRealtime(2f);
         panelGameOver.SetActive(true); // Muestra el panel de derrota
         Debug.Log("Has perdido.");
-        StartCoroutine(ChangeScene(TypeScene.HomeScene)); // Cambia a la escena principal
+        //StartCoroutine(ChangeScene(TypeScene.HomeScene)); // Cambia a la escena principal
     }
 
     public void SelectScene(int typeScene)
@@ -101,7 +97,7 @@ public class GameManager : MonoBehaviour
         ChangeSceneSelector(scene);
     }
 
-    public void ChangeSceneSelector(TypeScene typeScene)
+    private void ChangeSceneSelector(TypeScene typeScene)
     {
         switch (typeScene)
         {
@@ -209,7 +205,7 @@ public class GameManager : MonoBehaviour
         return string.Format("{0:00}:{1:00}", minutes, seconds);
     }
 
-    public enum TypeScene
+    private enum TypeScene
     {
         HomeScene = 0,
         OptionsScene = 1,
@@ -221,7 +217,10 @@ public class GameManager : MonoBehaviour
     {
         if (scene.name == "GameScene")
         {
-            //TODO
+            panelGameOver = GameObject.FindGameObjectWithTag("GameOverPanel");
+            panelGameOver.SetActive(false);
+            timerText = GameObject.FindGameObjectWithTag("Score").GetComponent<TextMeshPro>();
+            timer = 0;
             OnStart?.Invoke();
         }
     }
