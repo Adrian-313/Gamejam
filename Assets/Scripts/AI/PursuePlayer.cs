@@ -14,10 +14,21 @@ public class PursuePlayer : MonoBehaviour
 
     private Transform player;
 
-    private void Start()
+    private void Awake()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
         isGame = false;
+        GameManager.OnStart += StartChase;
+    }
+
+    private void OnDestroy()
+    {
+        GameManager.OnStart -= StartChase;
+    }
+
+    private void Start()
+    {
+        
     }
 
     // Update is called once per frame
@@ -33,7 +44,10 @@ public class PursuePlayer : MonoBehaviour
 
     private void ChasePlayer()
     {
-        agent.SetDestination(player.position);
+        if (player == null)
+            player = GameObject.FindGameObjectWithTag("Player").transform;
+        else
+            agent.SetDestination(player.position);
     }
 
     private void TransitionAnimation()
@@ -51,7 +65,21 @@ public class PursuePlayer : MonoBehaviour
         {
             animator.ResetTrigger("attack");
             animator.SetTrigger("attack");
-            // TODO: Player attacked
+            agent.ResetPath();
+            agent.velocity = Vector3.zero;
+            TransitionAnimation();
+            EndChase();
+            GameManager.Instance.PlayerCaught();
         }
+    }
+
+    private void StartChase()
+    {
+        isGame = true;
+    }
+
+    private void EndChase()
+    {
+        isGame = false;
     }
 }

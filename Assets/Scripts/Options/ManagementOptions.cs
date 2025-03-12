@@ -12,7 +12,6 @@ public class ManagementOptions : MonoBehaviour
     public GameObject homeButton;
     public GameObject muteCheck;
     public GameObject fullScreenCheck;
-    public GameManagerHelper gameManagerHelper;
 
     void OnEnable()
     {
@@ -109,7 +108,7 @@ public class ManagementOptions : MonoBehaviour
     }
     public void SetMixerValues()
     {
-        gameManagerHelper.SetAudioMixerData();
+        GameManager.Instance.SetAudioMixerData();
     }
     public void SetLenguage()
     {
