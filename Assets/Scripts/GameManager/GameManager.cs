@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
 
     public ManagementData managementData; // Referencia a los datos de configuración
     public Animator OpenCloseScene; // Controla las animaciones de transición
-    public TextMeshPro timerText; // Referencia al texto del reloj
+    public TextMeshProUGUI timerText; // Referencia al texto del reloj
     public float gameDuration = 60f; // Duración del juego en segundos
 
     private float timer; // Temporizador interno
@@ -61,6 +61,7 @@ public class GameManager : MonoBehaviour
             if (timerText != null)
             {
                 timerText.SetText(FormatTime(timer));
+                Debug.Log(timerText);
             }
         }
     }
@@ -219,7 +220,7 @@ public class GameManager : MonoBehaviour
         {
             panelGameOver = GameObject.FindGameObjectWithTag("GameOverPanel");
             panelGameOver.SetActive(false);
-            timerText = GameObject.FindGameObjectWithTag("Score").GetComponent<TextMeshPro>();
+            timerText = GameObject.FindGameObjectWithTag("Score").GetComponent<TextMeshProUGUI>();
             timer = 0;
             OnStart?.Invoke();
         }
