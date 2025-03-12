@@ -7,6 +7,7 @@ public class PursuePlayer : MonoBehaviour
     public NavMeshAgent agent;
     public Animator animator;
     public float attackRadius;
+    public AudioClip attackClip;
 
     [SerializeField] Transform hitbox;
     [SerializeField] LayerMask attackLayer;
@@ -65,6 +66,7 @@ public class PursuePlayer : MonoBehaviour
         {
             animator.ResetTrigger("attack");
             animator.SetTrigger("attack");
+            GameManager.Instance.PlayASound(attackClip);
             agent.ResetPath();
             agent.velocity = Vector3.zero;
             TransitionAnimation();

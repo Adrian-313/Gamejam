@@ -222,6 +222,7 @@ public class GameManager : MonoBehaviour
             panelGameOver.SetActive(false);
             timerText = GameObject.FindGameObjectWithTag("Score").GetComponent<TextMeshProUGUI>();
             timer = 0;
+            gameEnded = false;
             OnStart?.Invoke();
         }
     }

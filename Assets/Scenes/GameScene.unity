@@ -617,6 +617,10 @@ PrefabInstance:
       propertyPath: cam
       value: 
       objectReference: {fileID: 1088169600}
+    - target: {fileID: 3790366967644278501, guid: 2ff347015d4bc4e44b62655bb1726f02, type: 3}
+      propertyPath: attackClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 507039d798cd2dc4996bf728c6e368f8, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1344,6 +1348,7 @@ MonoBehaviour:
   walkSpeed: 10
   runSpeed: 15
   rotationSpeed: 50
+  death: {fileID: 8300000, guid: a33821c6638f61b4e9ce6ad37af93afb, type: 3}
 --- !u!136 &1277193826
 CapsuleCollider:
   m_ObjectHideFlags: 0

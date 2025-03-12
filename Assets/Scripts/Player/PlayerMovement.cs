@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     public float walkSpeed = 3f;
     public float runSpeed = 6f;
     public float rotationSpeed = 10f;
+    public AudioClip death;
 
     Animator animator;
 
@@ -78,5 +79,6 @@ public class PlayerMovement : MonoBehaviour
     {
         isGame = false;
         animator.SetBool("isDead", true);
+        GameManager.Instance.PlayASound(death);
     }
 }
