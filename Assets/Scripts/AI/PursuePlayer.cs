@@ -10,33 +10,25 @@ public class PursuePlayer : MonoBehaviour
 
     [SerializeField] Transform hitbox;
     [SerializeField] LayerMask attackLayer;
+    private bool isGame;
 
     private Transform player;
 
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
+        isGame = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        // For the lack of player still, this is for mere testing purposes
-        //if (Input.GetMouseButtonDown(0))
-        //{
-        //    Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-        //    RaycastHit hit;
-
-        //    if(Physics.Raycast(ray, out hit))
-        //    {
-        //        agent.SetDestination(hit.point);
-        //    }
-        //}
-        //---
-
-        ChasePlayer();
-        TransitionAnimation();
-        Attack();
+        if (isGame)
+        {
+            ChasePlayer();
+            TransitionAnimation();
+            Attack();
+        }
     }
 
     private void ChasePlayer()
