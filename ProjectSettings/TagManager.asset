@@ -5,15 +5,17 @@ TagManager:
   serializedVersion: 3
   tags:
   - InformationBetweenScenes
+  - GameOverPanel
+  - Score
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Ground
   - Water
   - UI
-  - 
-  - 
+  - Player
+  - Enemy
   - 
   - 
   - 

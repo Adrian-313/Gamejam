@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -6,50 +8,59 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance { get; private set; }
+    public static event Action OnStart, OnEnd;
+
     public ManagementData managementData; // Referencia a los datos de configuración
     public Animator OpenCloseScene; // Controla las animaciones de transición
-    public GameObject panelCongratulation; // Panel de victoria
-    public GameObject panelGameOver; // Panel de derrota
-    public Text timerText; // Referencia al texto del reloj
+    public TextMeshPro timerText; // Referencia al texto del reloj
     public float gameDuration = 60f; // Duración del juego en segundos
 
     private float timer; // Temporizador interno
     private bool gameEnded; // Bandera para verificar si el juego ha terminado
+    private GameObject panelCongratulation; // Panel de victoria
+    private GameObject panelGameOver; // Panel de derrota
 
-    public void Start()
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(this.gameObject);
+
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void Start()
     {
         // Configuración inicial del juego
         managementData.SetAudioMixerData();
         timer = gameDuration;
         gameEnded = false;
 
-        // Desactiva los paneles de victoria y derrota
-        panelCongratulation.SetActive(false);
-        panelGameOver.SetActive(false);
-
         // Inicializa el texto del reloj
         if (timerText != null)
         {
-            timerText.text = FormatTime(timer);
+            timerText.SetText(FormatTime(timer));
         }
     }
 
-    public void Update()
+    private void Update()
     {
         if (!gameEnded)
         {
-            timer -= Time.deltaTime; // Reduce el tiempo restante
+            timer += Time.deltaTime; // Reduce el tiempo restante
 
             // Actualiza el texto del reloj
             if (timerText != null)
             {
-                timerText.text = FormatTime(timer);
-            }
-
-            // Verifica si el jugador ha ganado
-            if (timer <= 0)
-            {
-                PlayerWins();
+                timerText.SetText(FormatTime(timer));
             }
         }
     }
@@ -58,7 +69,7 @@ public class GameManager : MonoBehaviour
     {
         if (!gameEnded)
         {
-            PlayerLoses();
+            StartCoroutine(PlayerLoses());
         }
     }
 
@@ -70,15 +81,23 @@ public class GameManager : MonoBehaviour
         StartCoroutine(ChangeScene(TypeScene.HomeScene)); // Cambia a la escena principal
     }
 
-    private void PlayerLoses()
+    private IEnumerator PlayerLoses()
     {
         gameEnded = true; // Marca el juego como terminado
+        OnEnd?.Invoke();
+        yield return new WaitForSecondsRealtime(2f);
         panelGameOver.SetActive(true); // Muestra el panel de derrota
         Debug.Log("Has perdido.");
-        StartCoroutine(ChangeScene(TypeScene.HomeScene)); // Cambia a la escena principal
+        //StartCoroutine(ChangeScene(TypeScene.HomeScene)); // Cambia a la escena principal
     }
 
-    public void ChangeSceneSelector(TypeScene typeScene)
+    public void SelectScene(int typeScene)
+    {
+        TypeScene scene = (TypeScene)typeScene;
+        ChangeSceneSelector(scene);
+    }
+
+    private void ChangeSceneSelector(TypeScene typeScene)
     {
         switch (typeScene)
         {
@@ -106,7 +125,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public IEnumerator FadeIn()
+    private IEnumerator FadeIn()
     {
         float decibelsMaster = 20 * Mathf.Log10(ManagementData.saveData.configurationsInfo.soundConfiguration.MASTERValue / 100);
         float currentVolumen = 0;
@@ -128,7 +147,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public IEnumerator ChangeScene(TypeScene typeScene)
+    private IEnumerator ChangeScene(TypeScene typeScene)
     {
         Time.timeScale = 1;
         yield return new WaitForSecondsRealtime(2);
@@ -144,7 +163,7 @@ public class GameManager : MonoBehaviour
         StartCoroutine(FadeIn());
     }
 
-    public IEnumerator FadeOut()
+    private IEnumerator FadeOut()
     {
         float decibelsMaster = 20 * Mathf.Log10(ManagementData.saveData.configurationsInfo.soundConfiguration.MASTERValue / 100);
         while (decibelsMaster > -80)
@@ -168,7 +187,7 @@ public class GameManager : MonoBehaviour
     {
         AudioSource audioBox = Instantiate(Resources.Load<GameObject>("Prefabs/AudioBox/AudioBox")).GetComponent<AudioSource>();
         audioBox.clip = audioClip;
-        audioBox.pitch = Random.Range(initialRandomPitch - 0.1f, initialRandomPitch + 0.1f);
+        audioBox.pitch = UnityEngine.Random.Range(initialRandomPitch - 0.1f, initialRandomPitch + 0.1f);
         audioBox.Play();
         Destroy(audioBox.gameObject, audioBox.clip.length);
     }
@@ -186,11 +205,23 @@ public class GameManager : MonoBehaviour
         return string.Format("{0:00}:{1:00}", minutes, seconds);
     }
 
-    public enum TypeScene
+    private enum TypeScene
     {
         HomeScene = 0,
         OptionsScene = 1,
         GameScene = 2,
         Exit = 3
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "GameScene")
+        {
+            panelGameOver = GameObject.FindGameObjectWithTag("GameOverPanel");
+            panelGameOver.SetActive(false);
+            timerText = GameObject.FindGameObjectWithTag("Score").GetComponent<TextMeshPro>();
+            timer = 0;
+            OnStart?.Invoke();
+        }
     }
 }

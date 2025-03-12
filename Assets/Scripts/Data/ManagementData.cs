@@ -7,6 +7,8 @@ using System.Linq;
 
 public class ManagementData : MonoBehaviour
 {
+    public static ManagementData Instance { get; private set; }
+
     private static string nameSaveData = "SaveData.json";
     public SaveDataInfo saveDataInfo = new SaveDataInfo();
     public static SaveDataInfo saveData = new SaveDataInfo();
